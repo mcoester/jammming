@@ -1,9 +1,9 @@
 import React from 'react'; 
 
-function Tracklist() {
+function Tracklist(props) {
     return (
         <>
-            <ul></ul>
+            <ul>{props.children}</ul>
             <button>Save To Spotify</button>
         </>
     )

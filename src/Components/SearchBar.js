@@ -7,7 +7,7 @@ function SearchBar({ search, handleChange, handleClick }){
 
     return (
         <>
-            <input placeholder='Search' value={search} onChange={changeHandler}/>
+            <input placeholder='Search' value={search} onChange={changeHandler} type='text' />
             <button onClick={handleClick} >Search</button>
         </>
     )

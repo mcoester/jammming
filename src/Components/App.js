@@ -1,7 +1,10 @@
 import '../App.css';
 import SearchBar from './SearchBar.js';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import SearchResults from './SearchResults.js';
+import Playlist from './Playlist.js';
+import Tracklist from './Tracklist.js';
+import Track from './Track.js';
 
 const data = [
   {
@@ -24,29 +27,54 @@ const data = [
 function App() {
   const [search, setSearch] = useState("");
   const [results, setResults] = useState([]);
+  const [listName, setListName] = useState("");
+  const [tracks, setTracks] = useState([]);
   
-  function handleChange(searchEntry){
+  function handleSearchChange(searchEntry){
     setSearch(searchEntry);
   }
 
+  function handleListChange(listEntry){
+    setListName(listEntry);
+  }
+
+  function handleAddClick(index){
+    setTracks(prev => {
+      return[...prev, results[index]];   
+    });
+  }
+
+  function handleRemoveClick(index){
+    setTracks((prev) => {
+      return prev.filter((_, i) => i !== index);
+    });
+  }
+
   function handleClick(){
-    console.log(search);
+    let id = 0;
+    
     const newDataArray = data.filter(element =>{
       return (element.song.toLowerCase() === search.toLowerCase() || element.artist.toLowerCase() === search.toLowerCase() || element.album.toLowerCase() === search.toLowerCase());
     });
-    console.log(newDataArray);
-    const newListArray = newDataArray.map(element =>{
-      return <li><strong>Song:</strong> {element.song}<br/> <strong>Artist:</strong> {element.artist}<br/> <strong>Album:</strong> {element.album}<br/> </li>
+    newDataArray.map(songObject =>{
+      songObject.key = id++;
+      return songObject;
     });
-    setResults(newListArray);
+    setResults(newDataArray);
   }
-
+  
   return (
     <>
-      <SearchBar search={search} handleChange={handleChange} handleClick={handleClick} />
-      <SearchResults results={results} />
+      <SearchBar search={search} handleChange={handleSearchChange} handleClick={handleClick} />
+      <SearchResults results={results} handleAddClick={handleAddClick} />
+      <Playlist title={listName} handleChange={handleListChange}>
+        <Tracklist>
+          <Track tracks={tracks} handleRemoveClick={handleRemoveClick} />
+        </Tracklist>
+      </Playlist>
     </>
   );
 }
+
 
 export default App;
