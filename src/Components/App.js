@@ -5,6 +5,7 @@ import SearchResults from './SearchResults.js';
 import Playlist from './Playlist.js';
 import Tracklist from './Tracklist.js';
 import Track from './Track.js';
+import spotifyConnection from './SpotifyConnection.js';
 
 const data = [
   {
@@ -23,6 +24,17 @@ const data = [
       album: '8 Mile'
   }
 ]
+
+const accessValues = spotifyConnection.getAccessToken();
+
+  if(!accessValues){
+    setTimeout(() =>{
+      alert('Bitte aktualisiere die Seite um einen neuen Spotify-Authentifizierungscode zu erhalten.');
+    }, 10);
+    spotifyConnection.connectWithSpotifyAuth();
+  }
+
+  console.log(accessValues.access_token);
 
 function App() {
   const [search, setSearch] = useState("");
@@ -51,6 +63,7 @@ function App() {
   }
 
   function handleClick(){
+
     let id = 0;
     
     const newDataArray = data.filter(element =>{
@@ -62,7 +75,7 @@ function App() {
     });
     setResults(newDataArray);
   }
-  
+
   return (
     <>
       <SearchBar search={search} handleChange={handleSearchChange} handleClick={handleClick} />

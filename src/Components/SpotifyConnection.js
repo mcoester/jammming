@@ -4,10 +4,6 @@ var redirect_uri = 'http://localhost:3000';
 var scope = 'playlist-modify-public';
 
 var url = 'https://accounts.spotify.com/authorize';
-url += '?response_type=token';
-url += '&client_id=' + encodeURIComponent(client_id);
-url += '&scope=' + encodeURIComponent(scope);
-url += '&redirect_uri=' + encodeURIComponent(redirect_uri);
 
 const connectWithSpotifyAuth = () =>{
     url += '?response_type=token';
@@ -23,15 +19,20 @@ const getAccessToken = () =>{
     let access_token;
     let expiration_time;
     let error;
+    let indexOfEquals;
+    let indexOfNextQuery; 
+    let indexOfExpirationTime;
     if(hash.includes('access_token')){
-        let indexOfEquals = hash.indexOf('=');
+        indexOfEquals = hash.indexOf('=');
         indexOfEquals = indexOfEquals + 1;
-        let indexOfNextQuery = hash.indexOf('&');
+        indexOfNextQuery = hash.indexOf('&');
         access_token = hash.substring(indexOfEquals, indexOfNextQuery);
-        indexOfEquals = hash.indexOf('=', hash.indexOf('expires_in'));
+        indexOfExpirationTime = hash.indexOf('expires_in');
+        indexOfEquals = hash.indexOf('=', indexOfExpirationTime);
         indexOfEquals = indexOfEquals + 1;
-        indexOfNextQuery = hash.indexOf('&', hash.indexOf('expires_in'));
-        expiration_time = parseInt(hash.substring(indexOfEquals, indexOfNextQuery), 10);
+        /*indexOfNextQuery = hash.indexOf('&', indexOfExpirationTime);
+        console.log(indexOfNextQuery);*/
+        expiration_time = parseInt(hash.substring(indexOfEquals), 10);
         authorizationValues = {
             access_token: access_token,
             expiration_time : expiration_time,
@@ -43,10 +44,13 @@ const getAccessToken = () =>{
         indexOfNextQuery = hash.indexOf('&');
         error = hash.substring(indexOfEquals, indexOfNextQuery);
         return error;
-    }
+    } else {
+        return null;
+    }  
 }
 
 const spotifyConnection = {
     connectWithSpotifyAuth: connectWithSpotifyAuth,
     getAccessToken: getAccessToken,
 }
+export default spotifyConnection;
