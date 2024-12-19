@@ -26,11 +26,12 @@ const data = [
 ]
 
 const accessValues = spotifyConnection.getAccessToken();
-
-  if(!accessValues){
+if(accessValues){
     setTimeout(() =>{
-      alert('Bitte aktualisiere die Seite um einen neuen Spotify-Authentifizierungscode zu erhalten.');
-    }, 10);
+        alert('Bitte aktualisiere die Seite um einen neuen Spotify-Authentifizierungscode zu erhalten.');
+    },  3600 * 1000)
+};
+  if(!accessValues){
     spotifyConnection.connectWithSpotifyAuth();
   }
 
