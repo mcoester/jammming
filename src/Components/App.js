@@ -63,9 +63,32 @@ function App() {
     });
   }
 
-  function handleClick(){
+  async function getTracks(url){
+    try {
+      const response = await fetch(url, {
+        headers: {
+          "Authorization": `Bearer ${accessValues.access_token}`,
+          "Content-Type": "application/json", //Für den Fall das die Anfrage abgelehnt wird gibt das Programm einen error aus und es ist kein zugriff auf access_token möglich. Dieser Fall muss noch eingebaut werden!
+        },
+      });
+      if(response.ok){
+        const jsonResponse = await response.json();
+        console.log(jsonResponse); //hier Json-Daten weiter verarbeiten!
+        setResults(jsonResponse.tracks.items); // an dieser Stelle fehlt noch das hinzufügen einer Möglichkeit des weiterblätterns zur nächsten Seite
+        console.log(results);
+      } else {
+        throw new Error('Request failed!');
+      }
+    } catch(e){
+      console.log(e);
+    }
+  }
 
-    let id = 0;
+  function handleClick(){
+    const searchQuery = encodeURIComponent(search);
+    let fetchUrl = `https://api.spotify.com/v1/search?q=${searchQuery}&type=track&market=DE&limit=5&offset=0`;
+    getTracks(fetchUrl);
+    /*let id = 0;
     
     const newDataArray = data.filter(element =>{
       return (element.song.toLowerCase() === search.toLowerCase() || element.artist.toLowerCase() === search.toLowerCase() || element.album.toLowerCase() === search.toLowerCase());
@@ -74,7 +97,7 @@ function App() {
       songObject.key = id++;
       return songObject;
     });
-    setResults(newDataArray);
+    setResults(newDataArray);*/
   }
 
   return (

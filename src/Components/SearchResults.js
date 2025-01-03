@@ -2,7 +2,14 @@ import React from 'react';
 
 function SearchResults(props){
     const listArray = props.results.map((element, index) =>{
-        return <li key={element.key}><strong>Song:</strong> {element.song}<br/> <strong>Artist:</strong> {element.artist}<br/> <strong>Album:</strong> {element.album}<br/> <button onClick={() => props.handleAddClick(index)} >+</button></li>
+        const artists = element.artists.map((artist, pos) => {
+            if(pos < element.artists.length - 1){
+                return artist.name + ', '; 
+            }
+            else return artist.name + ' ';
+    });
+        //hier fehlt noch ein key für die list-elemente damit React die elemente einfacher verwalten kann
+        return <li><strong>Song:</strong> {element.name}<br/> <strong>Artists:</strong> {artists}<br/> <strong>Album:</strong> {element.album.name}<br/> <button onClick={() => props.handleAddClick(index)} >+</button></li>
     });
     return (
         <div>
