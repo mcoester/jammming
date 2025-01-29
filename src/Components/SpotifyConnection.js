@@ -1,7 +1,7 @@
 var client_id = 'b61ae48d795d4d7faae2e07d9b3ac88f';
 var redirect_uri = 'http://localhost:3000';
 
-var scope = 'playlist-modify-public';
+var scope = 'playlist-modify-public playlist-modify-private user-read-private user-read-email';
 
 var url = 'https://accounts.spotify.com/authorize';
 

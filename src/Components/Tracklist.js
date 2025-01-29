@@ -4,7 +4,7 @@ function Tracklist(props) {
     return (
         <>
             <ul>{props.children}</ul>
-            <button>Save To Spotify</button>
+            <button onClick={props.saveToSpotify}>Save To Spotify</button>
         </>
     )
 }

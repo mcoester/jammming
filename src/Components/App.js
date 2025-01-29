@@ -7,23 +7,6 @@ import Tracklist from './Tracklist.js';
 import Track from './Track.js';
 import spotifyConnection from './SpotifyConnection.js';
 
-const data = [
-  {
-      song: "Don't matter",
-      artist: 'Akon',
-      album: 'Konvicted'
-  },
-  {
-      song: 'Smack that',
-      artist: 'Akon',
-      album: 'Konvicted'
-  },
-  {
-      song: 'Lose Yourself',
-      artist: 'Eminem',
-      album: '8 Mile'
-  }
-]
 
 const accessValues = spotifyConnection.getAccessToken();
 if(accessValues){
@@ -53,7 +36,7 @@ function App() {
 
   function handleAddClick(index){
     setTracks(prev => {
-      return[...prev, results[index]];   
+      return [...prev, results[index]];   
     });
   }
 
@@ -100,12 +83,99 @@ function App() {
     setResults(newDataArray);*/
   }
 
+  async function fetchUsersProfile(){
+    let userId;
+    const url = 'https://api.spotify.com/v1/me'
+    try{
+      const response = await fetch(url, {
+        headers: {
+          "Authorization": `Bearer ${accessValues.access_token}`,
+          "Content-Type": "application/json",
+        }
+      });
+      if(response.ok){
+        const jsonResponse = await response.json();
+        userId = jsonResponse.id;
+        console.log(userId);
+      } else {
+          throw new Error('Request failed');
+      }
+    } catch(e){
+      console.log(e);
+    }
+    return userId;
+  }
+
+  async function createPlayList(){
+    let playListId;
+    let userId = await fetchUsersProfile();
+    const requestBody = {
+      "name": listName,
+    };
+    userId = encodeURIComponent(userId);
+    const fetchUrl = 'https://api.spotify.com/v1/users/' + userId + '/playlists'
+    try{
+      const response = await fetch(fetchUrl, {
+      method: 'POST',
+      headers: {
+        "Authorization": `Bearer ${accessValues.access_token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    });
+    if(response.ok){
+      const jsonResponse = await response.json();
+      playListId = jsonResponse.id;
+    } else {
+      throw new Error('Post Request failed!');
+    }} catch (e){
+      console.log(e);
+    }
+    return playListId;
+  }
+
+  async function addTracksToPlayList(){
+    let playListId = await createPlayList();
+    let snapShotId;
+    playListId = encodeURIComponent(playListId);
+    const tracksUris = tracks.map(track =>{
+      return track.uri;
+    });
+    const requestBody = {
+      "uris": tracksUris,
+    }
+    const url = 'https://api.spotify.com/v1/playlists/' + playListId + '/tracks'
+    try{
+      const response = await fetch(url,{
+        method: 'POST',
+        headers:{
+        "Authorization": `Bearer ${accessValues.access_token}`,
+        "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+      if(response.ok){
+        const jsonResponse = await response.json();
+        snapShotId = jsonResponse.snapShot_id;
+      } else {
+        throw new Error('Add Track to Playlist-Request failed!');
+      }} catch(e){
+        console.log(e);
+      }
+    return snapShotId;
+    }
+  
+
+  const handleSaveToSpotify = () =>{
+    addTracksToPlayList();
+  }
+
   return (
     <>
       <SearchBar search={search} handleChange={handleSearchChange} handleClick={handleClick} />
       <SearchResults results={results} handleAddClick={handleAddClick} />
       <Playlist title={listName} handleChange={handleListChange}>
-        <Tracklist>
+        <Tracklist saveToSpotify={handleSaveToSpotify}>
           <Track tracks={tracks} handleRemoveClick={handleRemoveClick} />
         </Tracklist>
       </Playlist>
